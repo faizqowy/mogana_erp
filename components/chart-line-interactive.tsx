@@ -161,7 +161,7 @@ export function ChartLineInteractive() {
                 <span className="text-muted-foreground text-xs">
                   {chartConfig[chart].label}
                 </span>
-                <span className="text-lg leading-none font-bold sm:text-3xl">
+                <span className="text-lg leading-none font-bold sm:text-3xl" suppressHydrationWarning={true}>
                   {total[key as keyof typeof total].toLocaleString()}
                 </span>
               </button>

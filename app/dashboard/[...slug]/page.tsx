@@ -1,3 +1,4 @@
+import { menus } from '@/lib/menu'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,8 +9,12 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger, SidebarInset  } from "@/components/ui/sidebar"
+import { ChartLineInteractive } from "@/components/chart-line-interactive"
 
-export default function Page() {
+export default async function Page({ params }: { params: { slug?: string[] } }) {
+  const { slug } = await params
+
+  console.log("Dashboard Slug:", slug)
   return (
     <>
     <SidebarInset>
@@ -19,24 +24,21 @@ export default function Page() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbPage>System Settings</BreadcrumbPage>
+              <BreadcrumbPage>Overview</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </header>
 
-      <div className="flex flex-1 flex-col gap-4 p-4">
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-          <div className="bg-muted/50 aspect-video rounded-xl" />
-        </div>
-        <div className="bg-muted/50 h-[60vh] rounded-xl" />
+      {/*  Dashboard Content  */}
+      <div className="p-4">
+        <ChartLineInteractive /> 
       </div>
+
       </SidebarInset>
     </>
   )

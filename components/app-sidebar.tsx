@@ -1,4 +1,5 @@
 "use client"
+import {menus} from '@/lib/menu'
 
 import * as React from "react"
 import {
@@ -31,131 +32,57 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Main",
-      url: "/dashboard",
-      icon: SquareKanban,
-      isActive: true,
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-        },
-        {
-          title: "Reports & Analytics",
-          url: "/dashboard/reports-analytics",
-        }
-      ],
-    },
-    {
-      title: "Operations",
-      url: "/dashboard/operations",
-      icon: Hospital,
-      items: [
-        {
-          title: "Patient Management",
-          url: "/dashboard/operations/patient-management",
-        },
-        {
-          title: "Appointment Management",
-          url: "/dashboard/operations/appointment-management",
-        },
-        {
-          title: "Pharmacy & Inventory",
-          url: "/dashboard/operations/pharmacy-inventory",
-        },
-      ],
-    },
-    {
-      title: "Human Resources",
-      url: "/dashboard/human-resources",
-      icon: Users,
-      items: [
-        {
-          title: "Doctor & Staff Management",
-          url: "/dashboard/human-resources/doctor-staff-management",
-        },
-        {
-          title: "Attendance & Shifts",
-          url: "/dashboard/human-resources/attendance-shifts",
-        },
-        {
-          title: "Payroll",
-          url: "/dashboard/human-resources/payroll",
-        }
-      ],
-    },
-    {
-      title: "Finance",
-      url: "/dashboard/finance",
-      icon: Banknote,
-      items: [
-        {
-          title: "Billing & Invoices",
-          url: "/dashboard/finance/billing-invoices",
-        },
-        {
-          title: "Expenses",
-          url: "/dashboard/finance/expenses",
-        },
-        {
-          title: "Insurance Claims",
-          url: "/dashboard/finance/insurance-claims",
-        },
-        {
-          title: "Financial Reports",
-          url: "/dashboard/finance/financial-reports",
-        },
-      ],
-    },
-    {
-      title : "Administration",
-      url: "/dashboard/administration",
-      icon: Settings,
-      items: [
-        {
-          title: "System Settings",
-          url: "/dashboard/administration/system-settings",
-        },
-        {
-          title: "User Roles & Permissions",
-          url: "/dashboard/administration/user-roles-permissions",
-        },
-        {
-          title: "Audit & Logs",
-          url: "/dashboard/administration/audit-logs",
-        }
-      ],
-    }
-  ]
-  // projects: [
-  //   {
-  //     name: "Design Engineering",
-  //     url: "#",
-  //     icon: Frame,
-  //   },
-  //   {
-  //     name: "Sales & Marketing",
-  //     url: "#",
-  //     icon: PieChart,
-  //   },
-  //   {
-  //     name: "Travel",
-  //     url: "#",
-  //     icon: Map,
-  //   },
-  // ],
+const iconMap: Record<string, any> = {
+  Main: SquareKanban,
+  Operations: Hospital,
+  "Human Resources": Users,
+  Finance: Banknote,
+  Administration: Settings,
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+function buildNav(role: keyof typeof menus) {
+  const items = menus[role]
+
+  const groups: Record<string, any> = {}
+
+  items.forEach(item => {
+    const [rawCategory, rawItem] = item.name.split('/')
+    const category = rawCategory.replace('-', ' ')
+    const itemName = rawItem ? rawItem.replace('-', ' ') : rawCategory
+
+    const [hrefCategory] = item.href.split('/')
+    const categoryHref = `/dashboard/${hrefCategory}`
+
+    if (!groups[category]) {
+      groups[category] = {
+        title: category,
+        url: categoryHref,
+        icon: iconMap[category] || SquareKanban,
+        items: []
+      }
+    }
+
+    if (rawItem) {
+      groups[category].items.push({
+        title: itemName,
+        url: `/dashboard/${item.href}`
+      })
+    }
+  })
+
+  return Object.values(groups)
+}
+
+export function AppSidebar({role, ...props}: React.ComponentProps<typeof Sidebar> & { role: "superuser" | "doctor" | "staff"}) {
+
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    navMain: buildNav(role)
+  }
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
